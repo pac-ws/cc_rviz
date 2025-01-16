@@ -20,7 +20,6 @@ setup(
     maintainer_email='sauravag@upenn.edu',
     description='TODO: Package description',
     license='TODO: License declaration',
-    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'idf = cc_rviz.idf:main'
