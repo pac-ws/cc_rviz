@@ -8,10 +8,17 @@ import numpy as np
 from geometry_msgs.msg import TransformStamped
 from geometry_msgs.msg import PoseArray
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 
 class IDFPublisher(Node):
     def __init__(self):
         super().__init__('idf_publisher')
+        self.qos_profile = QoSProfile(
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=5
+        )
         self.tf_static_broadcaster = StaticTransformBroadcaster(self)
 
         self.make_transforms('idf')
@@ -20,27 +27,27 @@ class IDFPublisher(Node):
             Float32MultiArray,
             'system_map',
             self.system_map_callback,
-            1
+            qos_profile=self.qos_profile
         )
 
         self.system_map_publisher = self.create_publisher(
             PointCloud2,
             '/idf/system',
-            1
+            qos_profile=self.qos_profile
         )
 
 
         self.global_map_publisher = self.create_publisher(
             PointCloud2,
             '/idf/global',
-            1
+            qos_profile=self.qos_profile
         )
 
         self.global_map_subs = self.create_subscription(
             Float32MultiArray,
             'global_map',
             self.global_map_callback,
-            1
+            qos_profile=self.qos_profile
         )
 
     def system_map_callback(self, msg):
